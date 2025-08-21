@@ -1,15 +1,15 @@
 package models
 
 import (
-	"github.com/alan1-666/solana-wallet/database"
-	"github.com/ethereum/go-ethereum/common"
 	"math/big"
+
+	"github.com/alan1-666/solana-wallet/database"
 )
 
 type SubmitDWParams struct {
-	FromAddress  common.Address
-	ToAddress    common.Address
-	TokenAddress common.Address
+	FromAddress  string
+	ToAddress    string
+	TokenAddress string
 	Amount       *big.Int
 }
 

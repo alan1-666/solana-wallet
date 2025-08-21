@@ -2,26 +2,23 @@ package database
 
 import (
 	"errors"
-	"strings"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type Addresses struct {
-	GUID        uuid.UUID      `gorm:"primaryKey" json:"guid"`
-	UserUid     string         `json:"user_uid"`
-	Address     common.Address `json:"address" gorm:"serializer:bytes"`
-	AddressType uint8          `json:"address_type"` //0:用户地址；1:热钱包地址(归集地址)；2:冷钱包地址
-	PrivateKey  string         `json:"private_key"`
-	PublicKey   string         `json:"public_key"`
+	GUID        uuid.UUID `gorm:"primaryKey" json:"guid"`
+	UserUid     string    `json:"user_uid"`
+	Address     string    `json:"address"`
+	AddressType uint8     `json:"address_type"` //0:用户地址；1:热钱包地址(归集地址)；2:冷钱包地址
+	PrivateKey  string    `json:"private_key"`
+	PublicKey   string    `json:"public_key"`
 	Timestamp   uint64
 }
 
 type AddressesView interface {
-	QueryAddressesByToAddress(*common.Address) (*Addresses, error)
+	QueryAddressesByToAddress(string) (*Addresses, error)
 	QueryHotWalletInfo() (*Addresses, error)
 	QueryColdWalletInfo() (*Addresses, error)
 }
@@ -36,9 +33,9 @@ type addressesDB struct {
 	gorm *gorm.DB
 }
 
-func (db *addressesDB) QueryAddressesByToAddress(address *common.Address) (*Addresses, error) {
+func (db *addressesDB) QueryAddressesByToAddress(address string) (*Addresses, error) {
 	var addressEntry Addresses
-	err := db.gorm.Table("addresses").Where("address", strings.ToLower(address.String())).Take(&addressEntry).Error
+	err := db.gorm.Table("addresses").Where("address", address).Take(&addressEntry).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
