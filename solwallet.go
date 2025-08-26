@@ -10,6 +10,7 @@ import (
 	"github.com/alan1-666/solana-wallet/database"
 	"github.com/alan1-666/solana-wallet/wallet"
 	"github.com/alan1-666/solana-wallet/wallet/node"
+	"github.com/alan1-666/solana-wallet/wallet/sign"
 )
 
 type SolWallet struct {
@@ -33,17 +34,23 @@ func NewSolWallet(ctx context.Context, cfg *config.Config, shutdown context.Canc
 		return nil, err
 	}
 
+	signCli, err := sign.NewSolSignClient(cfg.SignServerProvider)
+	if err != nil {
+		log.Error("new sign client fail", "err", err)
+		return nil, err
+	}
+
 	deposit, err := wallet.NewDeposit(cfg, db, *solClient, shutdown)
 	if err != nil {
 		log.Error("new deposit fail", "err", err)
 		return nil, err
 	}
-	withdraw, err := wallet.NewWithdraw(cfg, db, *solClient, shutdown)
+	withdraw, err := wallet.NewWithdraw(cfg, db, *solClient, signCli, shutdown)
 	if err != nil {
 		log.Error("new withdraw fail", "err", err)
 		return nil, err
 	}
-	collectionCold, err := wallet.NewCollectionCold(cfg, db, *solClient, shutdown)
+	collectionCold, err := wallet.NewCollectionCold(cfg, db, *solClient, signCli, shutdown)
 	if err != nil {
 		log.Error("new collection and to cold fail", "err", err)
 		return nil, err

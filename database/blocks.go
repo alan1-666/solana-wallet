@@ -6,24 +6,15 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/google/uuid"
 )
 
 type Blocks struct {
-	Hash       common.Hash `gorm:"primaryKey;serializer:bytes"`
-	ParentHash common.Hash `gorm:"serializer:bytes"`
-	Number     *big.Int    `gorm:"serializer:u256"`
+	GUID       uuid.UUID `gorm:"primaryKey" json:"guid"`
+	Hash       string    `gorm:"primaryKey"`
+	ParentHash string    `json:"parent_hash"`
+	Number     *big.Int  `gorm:"serializer:u256"`
 	Timestamp  uint64
-}
-
-func BlockHeaderFromHeader(header *types.Header) Blocks {
-	return Blocks{
-		Hash:       header.Hash(),
-		ParentHash: header.ParentHash,
-		Number:     header.Number,
-		Timestamp:  header.Time,
-	}
 }
 
 type BlocksView interface {
